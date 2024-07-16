@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>History Screen</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ecf0f1;
+      color: #333;
+      margin: 0;
+      overflow-x: hidden; /* Hide horizontal scrollbar */
+    }
+
+    .container {
+      display: flex;
+      align-items: stretch;
+      height: 100vh;
+    }
+
+    .sidebar {
+      flex: 0 0 250px; /* Set sidebar width */
+      background: linear-gradient(to bottom, #2c3e50, #1a252f);
+      color: #ecf0f1;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      overflow-y: auto; /* Add vertical scrollbar if needed */
+    }
+
+    .sidebar:hover {
+      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo img {
+      max-width: 100%;
+    }
+
+    .icons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .icon {
+      padding: 10px;
+      position: relative;
+    }
+
+    .icon p {
+      margin-top: 5px; /* Added margin for text under icons */
+      text-align: center; /* Center text horizontally */
+    }
+
+    .icons .icon:nth-child(odd) {
+      margin-bottom: 20px; /* Adjusted margin between icons */
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+      background-color: #ecf0f1;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      overflow-y: auto; /* Add vertical scrollbar if needed */
+      transition: opacity 0.5s ease; /* Add transition effect */
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: transparent; /* Remove background color */
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-left: 10px; /* Add margin for spacing */
+      transition: color 0.3s ease; /* Add transition for color change */
+    }
+
+    button:hover {
+      color: #2980b9; /* Change text color on hover */
+    }
+
+    .search-container {
+      text-align: center;
+      margin-bottom: 20px; /* Add margin for spacing */
+    }
+
+    #searchInput {
+      text-align: center;
+      padding: 10px;
+      width: 250px; /* Adjust width as needed */
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px; /* Add margin for spacing */
+    }
+
+    #searchInput:focus {
+      text-align: center;
+      outline: none;
+      border-color: #3498db; /* Change border color on focus */
+    }
+
+    .report-title {
+      text-align: center;
+      font-size: 24px; /* Adjust font size as needed */
+      margin-bottom: 20px; /* Add margin for spacing */
+    }
+
+    .history-table-container {
+      width: 100%;
+      margin-top: 20px;
+      overflow-y: auto; /* Add scroll bar */
+      max-height: 400px; /* Set a maximum height for the table container */
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .history-table th,
+    .history-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .history-table th {
+      background-color: #f2f2f2;
+    }
+
+    .powered-by {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      font-size: 10px;
+      font-style: italic;
+    }
+
+    .report-title {
+      position: relative;
+      top: 0px; /* Adjust the value to move the title down */
+      left: 0%; /* Move the title horizontally to the center */
+      transform: translateX(-80%);
+    }
+
+   .icon p {
+  margin: 0; /* Remove default margin */
+  text-align: center; /* Center the text horizontally */
+  padding-top: 5px; /* Adjust vertical spacing */
+}
+
+.icon::after {
+  content: '';
+  position: absolute;
+  bottom: -10px; /* Adjust the position of the lines */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; /* Set line width to 0 */
+  height: 1px;
+  background-color: #ecf0f1; /* Set line color */
+}
+
+    .search-container button {
+      background-color: #3498db; /* Set background color */
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="logo">
+        <img src="/static/images/logo.png" alt="Logo">
+      </div>
+      <div class="icons">
+        <div class="icon">
+          <button onclick="navigateToPage('/home')" title="Home">
+            <img src="/static/images/icon1.png" alt="Home" style="width: 50px; height: 50px;">
+          </button>
+          <p>Home</p>
+        </div>
+        <div class="icon">
+          <button onclick="navigateToPage('/logout')" title="Logout">
+            <img src="/static/images/logout_icon.png" alt="Logout" style="width: 50px; height: 50px;">
+          </button>
+          <p>Logout</p>
+        </div>
+      </div>
+      <div class="powered-by">Powered by Ai-response®</div> <!-- Added powered by line -->
+    </div>
+    <div class="content">
+      <div class="report-title">History</div>
+      <div class="search-container">
+        <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for responses...">
+        <button onclick="searchTable()">Search</button>
+      </div>
+      <div class="history-table-container">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr>
+              <th>Prompt</th>
+              <th>Response</th>
+              <th>Date/Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in results %}
+            <tr>
+              <td>{{ row[0] }}</td>
+              <td>{{ row[1] }}</td>
+              <td>{{ row[2] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function navigateToPage(url) {
+      // Fade out the content area
+      document.querySelector('.content').style.opacity = '0';
+      // Navigate to the new page after the transition ends
+      setTimeout(() => {
+        window.location.href = url;
+      }, 500); // Adjust timing to match transition duration
+    }
+
+    function searchTable() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("searchInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("historyTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (var j = 0; j < td.length; j++) {
+          if (td[j]) {
+            txtValue = td[j].textContent || td[j].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+              break;
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

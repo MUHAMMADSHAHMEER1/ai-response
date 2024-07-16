@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up Page</title>
+  <style>
+    body {
+      background-color: #b0e0e6; /* Light blue */
+      margin: 0;
+      padding: 0;
+      font-family: 'Muli', sans-serif;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .logo-container {
+      /* Add your logo styling here */
+    }
+
+    .form-container {
+      background-color: #766fb0; /* Aquamarine */
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center; /* Center align content */
+    }
+
+    .form-body {
+      text-align: center;
+    }
+
+    .title {
+      font-size: 24px;
+    }
+
+    .form-field {
+      margin-bottom: 20px;
+      width: 300px; /* Adjust width as needed */
+      display: flex;
+      flex-direction: column; /* Stack label and input vertically */
+      align-items: center; /* Center align items */
+    }
+
+   input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  margin: auto; /* Center horizontally */
+}
+
+
+    .toggle-password {
+      cursor: pointer;
+      color: blue;
+    }
+
+    input[type="submit"],
+    input[type="button"] {
+      background-color: #ffb37b; /* Green */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    input[type="submit"]:hover,
+    input[type="button"]:hover {
+      background-color: #ffb37b;
+    }
+
+    /* Adjust logo size and position */
+    img.logo {
+      width: 100px; /* Adjust as needed */
+      margin-bottom: 20px; /* Add space between logo and form */
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="form-container">
+      <div class="form-body">
+        <!-- Move logo image inside form -->
+        <img class="logo" src="/static/images/logo.png" alt="Logo">
+        <h2 class="title">Welcome. Please sign up to continue</h2>
+        <br><br>
+        <form action="/SignUp_action" id="signup-form" class="the-form" method="post">
+          <div class="form-field">
+            <label for="fullname">Full Name</label>
+            <input type="text" name="fullname" id="fullname" placeholder="Enter your full name" required>
+          </div>
+          <div class="form-field">
+            <label for="email">Email Address</label>
+            <input type="email" name="email" id="email" placeholder="Enter your email address" required>
+          </div>
+          <div class="form-field">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" placeholder="Enter your username" required>
+          </div>
+          <div class="form-field">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="Enter your password" required>
+            <span class="toggle-password" onclick="togglePassword()">Show</span>
+          </div>
+          <input type="submit" value="Create Account">
+          <input type="button" onclick="redirectToLogIn()" value="Sign In">
+        </form>
+      </div><!-- FORM BODY-->
+    </div><!-- FORM CONTAINER -->
+  </div>
+  <script>
+    const form = document.getElementById("signup-form");
+    function togglePassword() {
+      var passwordInput = document.getElementById('password');
+      var toggleSpan = document.querySelector('.toggle-password');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleSpan.textContent = 'Hide';
+      } else {
+        passwordInput.type = 'password';
+        toggleSpan.textContent = 'Show';
+      }
+    }
+    function redirectToLogIn() {
+      // Redirect to the sign-in page
+      window.location.href = "/";
+    }
+    // Add an event listener for form submit
+    form.addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent default form submit behavior
+      // Get the form data
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const fullname = document.getElementById("fullname").value;
+      const email = document.getElementById("email").value;
+      fetch("/SignUp_action", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password, fullname, email })
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log("Form data submitted successfully!");
+          redirectToLogIn();
+        } else {
+          if (response.status === 409) {
+            throw new Error('Username or email already exists');
+          } else {
+            throw new Error('Password must be at least 8 characters long');
+          }
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        alert(error.message);
+      });
+    });
+  </script>
+</body>
+</html>

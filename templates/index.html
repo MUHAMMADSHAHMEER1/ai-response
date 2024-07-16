@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="icon" type="image/x-icon" href="static//images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Muli:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <link rel="stylesheet" href="static//css/index.css">
+    <meta name="google-signin-client_id" content="459129106154-0g08ma47prq3l7df71q0a75evkbqmaps.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <style>
+       body {
+    background-color: #b0e0e6; /* Light blue */
+    margin: 0;
+    padding: 0;
+    font-family: 'Muli', sans-serif;
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+    overflow-y: hidden; /* Prevent vertical scrolling */
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align form to the left */
+    justify-content: center;
+    min-height: 100vh; /* Adjusted minimum height to fill viewport */
+    padding: 20px; /* Added padding to reduce gap between lines */
+    box-sizing: border-box; /* Include padding in total height */
+}
+
+.form-container {
+    background-color: #7fffd4; /* Aquamarine */
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 10px; /* Decreased margin */
+    width: 100%; /* Adjusted width to fill container */
+    max-width: 400px; /* Added maximum width to prevent stretching */
+}
+
+.form-body {
+    text-align: center;
+    padding: 20px;
+}
+
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+label {
+    margin-top: 10px;
+    display: block;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 20px); /* Adjusted width for padding */
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    max-width: 100%; /* Maximum width for both fields */
+}
+
+input[type="submit"],
+input[type="button"] {
+    width: 100%;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin-top: 20px; /* Adjusted margin */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition */
+    border-radius: 5px;
+    padding: 15px;
+}
+
+input[type="submit"]:hover,
+input[type="button"]:hover {
+    background-color: #45a049;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: black; /* Change color to black */
+}
+
+.logo {
+    width: 300px; /* Adjust size as needed */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 0px; /* Decreased gap between lines */
+}
+
+.additional-text {
+    font-family: 'Comic Sans MS', sans-serif;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 10px; /* Decreased gap between lines */
+}
+
+.username-container,
+.password-container {
+    margin-bottom: 10px; /* Decreased gap between lines */
+}
+
+.username-container input[type="text"],
+.password-container input[type="password"] {
+    width: 100%; /* Set width to 100% */
+    max-width: 100%; /* Maximum width for both fields */
+}
+
+    .powered-by {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      font-size: 10px;
+      font-style: italic;
+    }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <div class="form-container">
+            <div class="form-body">
+                <img src="/static/images/logo.png" alt="Logo" class="logo">
+                <p class="additional-text">Guarding against Generative-AI Risks<br>Safeguarding the future of Cyber-Security</p>
+
+                <form action="" id="login-form" class="the-form" method="post">
+                    <div class="username-container">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" placeholder="Enter your username">
+                    </div>
+
+                    <div class="password-container">
+                        <label for="password">Password</label>
+                        <div class="password-container">
+                            <input type="password" name="password" id="password" placeholder="Enter your password">
+                            <i class="far fa-eye password-toggle" id="togglePassword"></i>
+                        </div>
+                    </div>
+
+                    <input type="submit" value="Log In">
+                    <input type="button" onclick="redirectToSignUp()" value="Sign Up">
+
+                </form>
+            </div>
+            <!-- FORM BODY-->
+        </div>
+        <!-- FORM CONTAINER -->
+    </div>
+
+    <script>
+        const form = document.getElementById("login-form");
+
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function (e) {
+            // toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            // toggle the eye slash icon
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        function redirectToSignUp() {
+            // Redirect to the sign-up page
+            window.location.href = "/Register";
+        }
+
+        // Add an event listener for form submit
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submit behavior
+
+            // Get the form data
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Make an API call to authenticate the user
+            fetch("/login_action", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Invalid username or password");
+                    }
+                })
+                .then(data => {
+                    // Redirect to the landing page on successful authentication
+                    window.location.href = "/home";
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert(error.message);
+                });
+        });
+    </script>
+
+</body>
+
+</html>

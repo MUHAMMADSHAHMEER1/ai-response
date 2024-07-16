@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AiResponseShield-Home</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f0f0;
+      color: #333;
+      position: relative;
+      overflow-x: hidden; /* Add this line to hide horizontal scrollbar */
+    }
+
+    .container {
+      display: flex;
+      width: 100%; /* Ensure container takes full width */
+      overflow-x: hidden; /* Add this line to hide horizontal overflow */
+    }
+
+    .sidebar {
+      width: 250px;
+      min-height: 100vh; /* Adjusted to min-height to ensure it covers the full viewport height */
+      background: linear-gradient(to bottom, #2c3e50, #1a252f);
+      color: #ecf0f1;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .sidebar:hover {
+      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo img {
+      max-width: 100%;
+    }
+
+    .icons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .icon {
+      padding: 10px;
+      position: relative;
+    }
+
+    .icon::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 1px;
+      background-color: transparent; /* Removed lines under icons */
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+      background-color: #ecf0f1;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow-y: auto; /* Added vertical scrollbar if content exceeds height */
+    }
+
+    .input-field,
+    .response-field,
+    button {
+      width: 100%;
+      margin-bottom: 20px; /* Added gap between icons/buttons */
+      position: relative;
+    }
+
+    input[type="text"],
+    textarea {
+      width: calc(100% - 35px);
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #bdc3c7;
+      outline: none;
+      margin-top: 20px;
+      background-color: #ecf0f1;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+      overflow-y: hidden;
+      max-height: 30px;
+      resize: none;
+      box-sizing: border-box;
+      font-size: 15px; /* Increased font size */
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      background-color: #d5d8dc;
+      border-color: #3498db;
+    }
+
+    .input-field textarea {
+      min-height: 50px;
+      padding-right: 40px;
+      padding-left: 10px;
+    }
+
+    .response-field {
+      position: relative;
+    }
+
+    .response-field textarea {
+      min-height: 400px;
+      position: relative;
+    }
+
+    .loading-icon {
+      position: absolute;
+      top: 5px; /* Adjusted position */
+      left: 5px; /* Adjusted position */
+      animation: rotateStar 1s linear infinite;
+      color: yellow;
+      font-size: 40px;
+      opacity: 0.8;
+    }
+
+    @keyframes rotateStar {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    textarea {
+      overflow-y: auto;
+      scrollbar-color: black black;
+      scrollbar-width: thin;
+    }
+
+    .upload-icon {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      background-color: #3498db;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .upload-icon i {
+      color: #fff;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      width: auto;
+      display: inline-block;
+      float: right;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .input-field::after,
+    .response-field::after,
+    button::after {
+      content: attr(title);
+      position: absolute;
+      background-color: rgba(52, 152, 219, 0.8);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 999;
+      animation: blink 2s infinite alternate;
+    }
+
+    .input-field::after {
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .response-field::after {
+      top: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    button::after {
+      top: calc(100% + 10px);
+      right: 65%;
+      transform: translateX(50%);
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+
+    .powered-by {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      font-size: 10px;
+      font-style: italic;
+    }
+
+    .icon img,
+    .icon p,
+    .upload-icon {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" title="Welcome! This section is where you enter your prompt to generate a response.">
+    <div class="sidebar" title="Welcome! This is the sidebar where you can access different sections of the application.">
+      <div class="logo">
+        <img src="/static/images/logo.png" alt="Logo">
+      </div>
+      <div class="icons">
+        <div class="icon" onclick="navigateToPage('/home')" title="Home">
+          <img src="/static/images/icon1.png" alt="Home">
+          <p>Home</p>
+        </div>
+        <div class="icon" onclick="navigateToPage('/history')" title="History">
+          <img src="/static/images/icon2.png" alt="History">
+          <p>History</p>
+        </div>
+        <div class="icon" onclick="clearTextField()" title="Reload">
+          <img src="/static/images/icon3.png" alt="Reload">
+          <p>Reload</p>
+        </div>
+        <div class="icon">
+          <a href="/logout" onclick="navigateToPage('/logout')" title="Logout">
+            <img src="/static/images/logout_icon.png" alt="Logout" style="width: 40px; height: 40px;">
+          </a>
+          <p>Logout</p>
+        </div>
+      </div>
+      <div class="powered-by">Powered by Ai-response®</div> <!-- Added powered by line -->
+    </div>
+
+    <div class="content" title="Welcome! This section displays the response generated based on your input prompt.">
+      <div class="input-field" title="Welcome! Enter your prompt here and click the upload icon to generate a response.">
+        <textarea id="textInput" placeholder="Enter your prompt here..." oninput="autoResize(this)"></textarea>
+        <label class="upload-icon" onclick="sendToGPT()" title="Generate Response"><i class="fas fa-upload"></i></label>
+      </div>
+
+      <div class="response-field" title="">
+        <textarea id="responseText" placeholder="Ai-Generated" readonly></textarea>
+        <div class="loading-icon" style="display:none;">🌟</div>
+      </div>
+      <button onclick="sendToReport()" title="">Check Code</button>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript code
+
+    // Onboarding messages
+
+    function autoResize(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+
+    function sendToGPT() {
+      var inputText = document.getElementById('textInput').value;
+
+      // Show loading icon
+      $('.loading-icon').show();
+
+      $.ajax({
+        url: '/ChatWithGPT',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ 'input':inputText}),
+        success: function(response) {
+          console.log(response);
+          console.log(typeof response);
+          document.getElementById('responseText').value = response.answer;
+          $('.loading-icon').hide(); // Hide loading icon on success
+          document.querySelector('.response-field').setAttribute('title', 'The generated response will appear in this section.');
+          document.querySelector('button').setAttribute('title', 'Check Vulnerability Status');
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+
+    function sendToReport() {
+      var inputText = document.getElementById('responseText').value;
+      $.ajax({
+        url: '/checkCode',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ 'input':inputText}),
+        success: function(response) {
+          window.location.href = '/report?answer=' + encodeURIComponent(response.answer);
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+
+    // Function to clear text field
+    function clearTextField() {
+      document.getElementById('textInput').value = '';
+    }
+
+    document.getElementById("textInput").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        // Add your logic here
+        sendToGPT();
+      }
+    });
+
+    function navigateToPage(url) {
+      // Fade out the content area
+      document.querySelector('.content').style.opacity = '0';
+      // Navigate to the new page after the transition ends
+      setTimeout(() => {
+        window.location.href = url;
+      }, 500); // Adjust timing to match transition duration
+    }
+  </script>
+</body>
+</html>
